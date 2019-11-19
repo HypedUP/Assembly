@@ -1,0 +1,76 @@
+; AddTwo.asm - adds two 32 - bit integers.
+; Chapter 3 example
+
+.386
+.model flat, stdcall
+.stack 4096
+ExitProcess proto, dwExitCode:dword
+INCLUDE Irvine32.inc
+
+.data
+prompt1 BYTE "Enter your GradeAverage: ", 0
+prompt2 BYTE "Enter your Credits: ", 0
+Caption db "Attention!", 0
+Text	BYTE "You can Proceed to register!", 0
+Text2	BYTE "You cannot register!", 0
+
+gradeAverage  SDWORD ? ; test value
+credits       SDWORD ? ; test value
+OkToRegister  BYTE ?
+
+
+.code
+main proc
+mov eax, 0
+mov edx, 0
+mov ebx, 0
+
+
+mov edx, OFFSET prompt1
+call WriteString
+call ReadInt
+mov gradeAverage, eax
+
+mov edx, OFFSET prompt2
+call WriteString
+call ReadInt
+mov credits, eax
+
+
+
+L1:
+cmp gradeAverage, 350
+ja L2
+jb L6
+
+L2 :
+cmp gradeAverage, 250
+ja L3
+jb L6
+
+L3 :
+cmp credits, 16
+jle L4
+ja L6
+
+
+L4 :
+cmp credits, 12
+jle L5
+
+L5 :
+mov ebx, OFFSET Caption
+mov edx, OFFSET Text
+call MsgBox
+call WaitMsg
+
+L6 :
+mov ebx, OFFSET Caption
+mov edx, OFFSET Text2
+call MsgBox
+call WaitMsg
+
+
+invoke ExitProcess, 0
+main endp
+end main
