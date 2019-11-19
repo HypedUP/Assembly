@@ -1,0 +1,60 @@
+; AddTwo.asm - adds two 32 - bit integers.
+; Chapter 3 example
+
+.386
+.model flat, stdcall
+.stack 4096
+ExitProcess proto, dwExitCode:dword
+INCLUDE Irvine32.inc
+
+.data
+user_Pin DWORD ?
+MIN DWORD 5, 2, 4, 1, 3
+MAX DWORD 9, 5, 8, 4, 6
+prompt BYTE "Please enter you PIN: ", 0
+p_error1 BYTE "INVALID NUMBER DETECTED IN 1ST DIGIT", 0
+p_error2 BYTE "INVALID NUMBER DETECTED IN 2ND DIGIT", 0
+p_error3 BYTE "INVALID NUMBER DETECTED IN 3rd DIGIT", 0
+p_error4 BYTE "INVALID NUMBER DETECTED IN 4th DIGIT", 0
+p_error5 BYTE "INVALID NUMBER DETECTED IN 5TH DIGIT", 0
+correct BYTE "The pin entered is valid",0
+
+
+.code
+main proc
+mov eax, 0
+mov edx, 0
+mov ecx, 5
+
+
+mov edx, OFFSET prompt
+call WriteString
+call ReadInt
+mov user_Pin, eax
+
+
+
+
+
+; Error Messages
+E1 : mov edx, OFFSET p_error1
+call WriteString
+
+E2 : mov edx, OFFSET p_error2
+call WriteString
+
+E3 : mov edx, OFFSET p_error3
+call WriteString
+
+E4 : mov edx, OFFSET p_error4
+call WriteString
+
+E5 : mov edx, OFFSET p_error5
+call WriteString
+
+
+	
+
+invoke ExitProcess, 0
+main endp
+end main
