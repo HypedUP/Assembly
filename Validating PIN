@@ -8,16 +8,12 @@ ExitProcess proto, dwExitCode:dword
 INCLUDE Irvine32.inc
 
 .data
-user_Pin DWORD ?
+user_Pin DWORD 5 dup(? )
 MIN DWORD 5, 2, 4, 1, 3
 MAX DWORD 9, 5, 8, 4, 6
 prompt BYTE "Please enter you PIN: ", 0
-p_error1 BYTE "INVALID NUMBER DETECTED IN 1ST DIGIT", 0
-p_error2 BYTE "INVALID NUMBER DETECTED IN 2ND DIGIT", 0
-p_error3 BYTE "INVALID NUMBER DETECTED IN 3rd DIGIT", 0
-p_error4 BYTE "INVALID NUMBER DETECTED IN 4th DIGIT", 0
-p_error5 BYTE "INVALID NUMBER DETECTED IN 5TH DIGIT", 0
-correct BYTE "The pin entered is valid",0
+p_error1 BYTE "INVALID NUMBER DETECTED IN PIN", 0
+correct BYTE "The pin entered is valid", 0
 
 
 .code
@@ -26,34 +22,50 @@ mov eax, 0
 mov edx, 0
 mov ecx, 5
 
+;Asks for user pin, and stores it into user_Pin
 
-mov edx, OFFSET prompt
-call WriteString
-call ReadInt
-mov user_Pin, eax
+mov edx, OFFSET prompt									;moves prompt to edx
+call WriteString										;writes prompt to instruct user
+call ReadString										;reads user input and stores into eax
+mov user_Pin, eax										;moves user input into user_Pin
+mov esi, user_Pin										;moves user_pin to esi to check each element
+mov edi, MIN											;moves array of valid minimum numbers to check within each element
+mov ecx, LENGTHOF user_Pin								;moves length of array to ecx so we limit loop runtime
+
+;checks user pin to min numbers for validation
+
+	L1:													;Label L1 is the first loop
+	cmp edi, esi											;compare both register edi, and esi
+		jl E1											;jumps to E1(error) if esi is not within the minimum valid number
+		inc edi											;incriments edi element for next check
+		inc esi											;incriments esi element for next check
+	loop L1												;Loops back to label L1 and decrement ecx
+
+;reinsert User pin then loops to check for valid MAX numbers
+
+mov esi,user_Pin										;moves user_Pin into esi to check for valid max numbers
+mov edi,MAX											;moves array of MAX numbers into edi for validation
+mov ecx,LENGTHOF user_Pin								;moves length of array user_Pin to ecx so we limit loop runtime
+
+	L2:													;Label L2 is the second loop
+		cmp esi, edi										;compare both regirster esi, edi
+			jg E1										;if esi is greater it jumps to E1(error)
+			inc edi										;Incriments edi element for next check
+			inc esi										;Incriments esi element for next check
+	loop L2												;Loops back to label L2 and decrement ecx
+
+; After checking each minand max it goes to next line which display pin is correct
+
+		mov edx, OFFSET correct
+		call WriteString
 
 
+		;Will jump to error if it finds any error with in the min and max check
+		; Error Messages
+		E1 : mov edx, OFFSET p_error1
+		call WriteString
 
 
-
-; Error Messages
-E1 : mov edx, OFFSET p_error1
-call WriteString
-
-E2 : mov edx, OFFSET p_error2
-call WriteString
-
-E3 : mov edx, OFFSET p_error3
-call WriteString
-
-E4 : mov edx, OFFSET p_error4
-call WriteString
-
-E5 : mov edx, OFFSET p_error5
-call WriteString
-
-
-	
 
 invoke ExitProcess, 0
 main endp
